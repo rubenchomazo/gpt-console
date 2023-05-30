@@ -1,11 +1,14 @@
 import openai
 import typer
+from colorama import Fore, Style, Back
 from rich import print
 from rich.table import Table
 
+import conf
+
 
 def main():
-    openai.api_key = "SECRET KEY"
+    openai.api_key = conf.config.apiKey
     print("[bold green]ChatGPT API en Python[/bold green]")
     table = Table("Comando", "Descripcion")
     table.add_row("exit", "Salir de la aplicacion")
@@ -13,7 +16,7 @@ def main():
     print(table)
     # Contexto del asistente
     context = {"role": "system",
-               "content": "Eres un asistente muy util."}
+               "content": "Eres un asistente de progamación muy util, siempre das ejemplos a mis soluciones"}
     messages = [context]
     while True:
         content = __prompt()
@@ -26,6 +29,14 @@ def main():
             model="gpt-3.5-turbo", messages=messages)
         response_content = response.choices[0].message.content
         messages.append({"role": "assistant", "content": response_content})
+        generateResponse(response_content)
+
+
+def generateResponse(response_content):
+    if response_content.find("```"):
+        print(Back.LIGHTBLACK_EX + Fore.CYAN + Style.DIM + response_content)
+        # typer.secho(response_content, fg=typer.colors.BRIGHT_CYAN)
+    else:
         print(f"[bold green]-> {response_content}[/bold green]")
 
 
